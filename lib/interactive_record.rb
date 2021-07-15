@@ -1,5 +1,6 @@
 require_relative "../config/environment.rb"
 require 'active_support/inflector'
+require 'pry'
 
 class InteractiveRecord
     def self.table_name
@@ -13,6 +14,7 @@ class InteractiveRecord
         column_names = []
         table_info.each do |row|
             column_names << row["name"]
+            #binding.pry
         end
         column_names.compact
     end
@@ -20,6 +22,7 @@ class InteractiveRecord
     def initialize(options={})
         options.each do |property, value|
             self.send("#{property}=", value)
+            #binding.pry
         end
     end
 
@@ -27,6 +30,7 @@ class InteractiveRecord
         sql = "INSERT INTO #{table_name_for_insert}(#{col_names_for_insert}) VALUES (#{values_for_insert}) "
         DB[:conn].execute(sql)
         @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{table_name_for_insert}")[0][0]
+        #binding.pry
     end
 
     def table_name_for_insert
@@ -39,6 +43,7 @@ class InteractiveRecord
             values << "'#{send(col_name)}'" unless send(col_name).nil?
         end
         values.join(", ")
+        #binding.pry
     end
 
     def col_names_for_insert
@@ -46,8 +51,10 @@ class InteractiveRecord
     end
 
     def self.find_by_name(name)
-        sql = "SELECT * FROM #{self.table_name} WHERE name = '#{name}"
+        sql = "SELECT * FROM #{self.table_name} WHERE name = '#{name}'"
+        #binding.pry
         DB[:conn].execute(sql)
+        #binding.pry
     end
 
 
@@ -56,5 +63,6 @@ class InteractiveRecord
         formatted_value = value.class == Fixnum ? value : "'#{value}'"
         sql = "SELECT * FROM #{self.table_name} WHERE #{attribute_hash.keys.first} = #{formatted_value}"
         DB[:conn].execute(sql)
+        binding.pry
     end
 end
